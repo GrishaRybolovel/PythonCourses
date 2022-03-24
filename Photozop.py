@@ -22,13 +22,16 @@ class Photoshop(Frame):
         self.image = Image.open(self.filename)
         self.photo = ImageTk.PhotoImage(self.image)
         self.canvas.itemconfigure(self.canvasImage, image=self.photo, anchor="nw")
+        self.canvas.configure(width=self.photo.width(), height=self.photo.height())
 
 
 
 
 
-root = Tk()
-root.title("Фотожоп")
-root.geometry("700x500")
-app = Photoshop(root)
-root.mainloop()
+
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Фотожоп")
+    root.geometry("700x500")
+    app = Photoshop(root)
+    root.mainloop()
