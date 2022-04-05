@@ -1,5 +1,5 @@
 from PIL import Image, ImageTk, ImageDraw
-from tkinter import Frame, Canvas, Button, Tk, filedialog
+from tkinter import Frame, Canvas, Button, Tk, filedialog, Label, Scale
 
 
 class Photoshop(Frame):
@@ -26,13 +26,39 @@ class Photoshop(Frame):
 
 
     def grey(self):
-        pass
+        self.draw = ImageDraw.Draw(self.image)
+        self.width = self.image.size[0]
+        self.height = self.image.size[1]
+        self.pix = self.image.load()
+
+        for x in range(self.width):
+            for y in range(self.height):
+                r = self.pix[x, y][0]
+                g = self.pix[x, y][1]
+                b = self.pix[x, y][2]
+                self.average = (r + g + b) // 3
+                self.draw.point((x, y), (self.average, self.average, self.average))
+
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.canvas.itemconfigure(self.canvasImage, image=self.photo, anchor="nw")
+
 
     def increase(self):
-        pass
+        self.width = self.image.size[0]
+        self.height = self.image.size[1]
+
+        self.image = self.image.resize((self.width + self.scale.get(), self.height + self.scale.get()))
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.canvas.itemconfigure(self.canvasImage, image=self.photo, anchor="nw")
 
     def decrease(self):
-        pass
+        self.width = self.image.size[0]
+        self.height = self.image.size[1]
+
+        if self.width - self.scale.get() > 0 and self.height - self.scale.get() > 0:
+            self.image = self.image.resize((self.width - self.scale.get(), self.height - self.scale.get()))
+            self.photo = ImageTk.PhotoImage(self.image)
+            self.canvas.itemconfigure(self.canvasImage, image=self.photo, anchor="nw")
 
     def save(self):
         self.filename = filedialog.asksaveasfilename()
@@ -64,12 +90,12 @@ class Photoshop(Frame):
 
         #
         self.btnIncrease = Button(text="Увеличить", height=2, width=12,
-                                  command=self.increase, state='disabled')
+                                  command=self.getValue, state='disabled')
         self.btnIncrease.place(x=570, y=150)
 
         #
         self.btnDecrease = Button(text="Уменьшить", height=2, width=12,
-                                  command=self.decrease, state='disabled')
+                                  command=self.getNValue, state='disabled')
         self.btnDecrease.place(x=570, y=195)
 
     def open(self):
@@ -81,6 +107,48 @@ class Photoshop(Frame):
 
         self.btn_save.configure(state="active")
         self.btnInversion.configure(state="active")
+        self.btnIncrease.configure(state="active")
+        self.btnDecrease.configure(state="active")
+        self.btnGrey.configure(state="active")
+
+    def getValue(self):
+        root = Tk()
+        root.title("Значение")
+        root.geometry("300x100")
+        label = Label(root, text="Выберите параметр для изменения картинки")
+        label.pack()
+
+        def close():
+            root.destroy()
+
+        self.scale = Scale(root, from_=0, to=100, orient="horizontal")
+        self.scale.pack()
+
+        buttonOK = Button(root, text="OK", command=self.increase)
+        buttonOK.pack()
+
+        buttonClose = Button(root, text="Закрыть", command=close)
+        buttonClose.pack()
+        root.mainloop()
+    def getNValue(self):
+        root = Tk()
+        root.title("Значение")
+        root.geometry("300x100")
+        label = Label(root, text="Выберите параметр для изменения картинки")
+        label.pack()
+
+        def close():
+            root.destroy()
+
+        self.scale = Scale(root, from_=0, to=100, orient="horizontal")
+        self.scale.pack()
+
+        buttonOK = Button(root, text="OK", command=self.decrease)
+        buttonOK.pack()
+
+        buttonClose = Button(root, text="Закрыть", command=close)
+        buttonClose.pack()
+        root.mainloop()
 
 
 if __name__ == "__main__":
