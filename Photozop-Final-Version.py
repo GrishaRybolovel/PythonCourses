@@ -29,6 +29,7 @@ class Photoshop(Frame):
 
         self.instrumentsMenu.add_command(label="Увеличить", command=self.getValue, state="disabled")
         self.instrumentsMenu.add_command(label="Уменьшить", command=self.getNValue, state="disabled")
+        self.instrumentsMenu.add_command(label="Повернуть", command=self.rotationValue, state="disabled")
 
 
 
@@ -64,7 +65,14 @@ class Photoshop(Frame):
         #
         self.btnDecrease = Button(text="Уменьшить", height=2, width=12,
                                   command=self.getNValue, state='disabled')
+
         self.btnDecrease.place(x=570, y=195)
+
+        #
+        self.btnRotate = Button(text="Повернуть", height=2, width=12,
+                                command=self.rotationValue, state='disabled')
+
+        self.btnRotate.place(x=570, y=240)
 
     def open(self):
         self.filename = filedialog.askopenfilename()
@@ -78,6 +86,16 @@ class Photoshop(Frame):
         self.btnIncrease.configure(state="active")
         self.btnDecrease.configure(state="active")
         self.btnGrey.configure(state="active")
+        self.btnRotate.configure(state="active")
+
+        self.fileMenu.entryconfig("Сохранить", state="active")
+
+        self.filtersMenu.entryconfig("Инверсия", state="active")
+        self.filtersMenu.entryconfig("Оттенок серого", state="active")
+
+        self.instrumentsMenu.entryconfig("Увеличить", state="active")
+        self.instrumentsMenu.entryconfig("Уменьшить", state="active")
+        self.instrumentsMenu.entryconfig("Повернуть", state="active")
 
     def getValue(self):
         root = Tk()
@@ -117,6 +135,37 @@ class Photoshop(Frame):
         buttonClose = Button(root, text="Закрыть", command=close)
         buttonClose.pack()
         root.mainloop()
+
+    def rotationValue(self):
+        root = Tk()
+        root.title("Значение")
+        root.geometry("300x100")
+        label = Label(root, text="Выберите параметр для изменения картинки")
+        label.pack()
+
+        def close():
+            root.destroy()
+
+        self.scale = Scale(root, from_=0, to=180, orient="horizontal")
+        self.scale.pack()
+
+        buttonOK = Button(root, text="OK", command=self.rotation)
+        buttonOK.pack()
+
+        buttonClose = Button(root, text="Закрыть", command=close)
+        buttonClose.pack()
+        root.mainloop()
+
+    def rotation(self):
+        self.width = self.image.size[0]
+        self.height = self.image.size[1]
+
+        self.image = self.image.rotate(self.scale.get())
+
+        self.photo = ImageTk.PhotoImage(self.image)
+        self.canvas.itemconfigure(self.canvasImage, image=self.photo, anchor="nw")
+
+
 
     def inversion(self):
         self.draw = ImageDraw.Draw(self.image)
