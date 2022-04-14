@@ -18,4 +18,33 @@ print(books.c.author_id)
 print(authors.c.name)
 
 
-engine = create_engine(subd + "+" + driver + "://" + user_name + ":" + password + "@" + host + ":" + port + "/" + db_name)
+try:
+    engine = create_engine(subd + "+" + driver + "://" + user_name + ":" + password + "@" + host + ":" + port + "/" + db_name)
+
+    books.create(engine)
+    authors.create(engine)
+
+    conn = engine.connect()
+
+    ins_author_query = authors.insert().values(name='Lutz')
+    conn.execute(ins_author_query)
+
+    ins_book_query = books.insert().values(title='Learn Python', author_id=1, genre='Education', price=1299)
+    conn.execute(ins_book_query)
+    ins_book_query2 = books.insert().values(title='Clear Python', author_id=1, genre='Education', price=956)
+    conn.execute(ins_book_query2)
+
+    books_gr_1000_query = books.select().where(books.c.price > 1000)  # SELECT * FROM Books WHERE Books.price > 1000;
+    result = conn.execute(books_gr_1000_query)
+
+    for row in result:
+        print(row)
+
+    print("Success")
+
+except Exception as ex:
+    print("Connection refused")
+    print(ex)
+
+
+
