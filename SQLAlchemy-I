@@ -1,0 +1,21 @@
+from sqlalchemy import select, Table, Column, Integer, String, MetaData, ForeignKey, create_engine
+from config import subd, driver, user_name, password, host, port, db_name
+
+meta = MetaData()
+
+authors = Table('Authors', meta,
+                Column('id_author', Integer, primary_key=True),
+                Column('name', String(250), nullable=False))
+
+books = Table('Books', meta,
+              Column('id_book', Integer, primary_key=True),
+              Column('title', String(250), nullable=False),
+              Column('author_id', Integer, ForeignKey('Authors.id_author')),
+              Column('genre', String(250)),
+              Column('price', Integer))
+
+print(books.c.author_id)
+print(authors.c.name)
+
+
+engine = create_engine(subd + "+" + driver + "://" + user_name + ":" + password + "@" + host + ":" + port + "/" + db_name)
